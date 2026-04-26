@@ -1,6 +1,6 @@
 # ViScriber
 
-Transcribe any video file locally using Whisper — no Python, no ffmpeg, no cloud upload required.
+Transcribe any video file locally using Whisper — no cloud upload required.
 
 ## Download
 
@@ -10,7 +10,7 @@ Transcribe any video file locally using Whisper — no Python, no ffmpeg, no clo
 | macOS | Download `VideoTranscriber.dmg` from [Releases](../../releases) |
 | Linux | Download `VideoTranscriber-x86_64.AppImage` from [Releases](../../releases) and `chmod +x` it |
 
-No Python or ffmpeg installation needed — everything is bundled.
+No Python installation needed. FFmpeg is included in official release builds when available. If FFmpeg is missing, the app shows setup instructions and asks you to install it.
 
 ---
 
@@ -26,6 +26,8 @@ No Python or ffmpeg installation needed — everything is bundled.
 ---
 
 ## Dev Setup
+
+FFmpeg note for developers: FFmpeg is required for audio extraction. If it is not bundled in your local build, install FFmpeg on your system and ensure the `ffmpeg` command is available in PATH.
 
 ```bash
 git clone https://github.com/bpsghub/ViScriber.git
