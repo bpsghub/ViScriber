@@ -1,0 +1,97 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: dist/VideoTranscriber-Setup.exe
+            platform: windows
+          - os: macos-latest
+            artifact: dist/VideoTranscriber.dmg
+            platform: macos
+          - os: ubuntu-latest
+            artifact: dist/VideoTranscriber-x86_64.AppImage
+            platform: linux
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Run PyInstaller
+        run: pyinstaller videotranscriber.spec
+
+      - name: Build Windows installer
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          choco install innosetup -y
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\windows\setup.iss
+
+      - name: Build macOS DMG
+        if: matrix.platform == 'macos'
+        run: |
+          brew install create-dmg
+          bash installer/macos/build-dmg.sh
+
+      - name: Build Linux AppImage
+        if: matrix.platform == 'linux'
+        run: |
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+          chmod +x appimagetool
+          sudo mv appimagetool /usr/local/bin/appimagetool
+          bash installer/linux/build-appimage.sh
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.platform }}
+          path: ${{ matrix.artifact }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/installer-windows/*
+            artifacts/installer-macos/*
+            artifacts/installer-linux/*
+          body: |
+            ## Video Transcriber ${{ github.ref_name }}
+
+            ### Downloads
+            | Platform | File |
+            |----------|------|
+            | Windows | `VideoTranscriber-Setup.exe` |
+            | macOS | `VideoTranscriber.dmg` |
+            | Linux | `VideoTranscriber-x86_64.AppImage` |
+
+            First launch will prompt you to download a Whisper model (~75–1500 MB depending on choice).

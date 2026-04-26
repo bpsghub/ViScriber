@@ -1,0 +1,11 @@
+.venv/
+.vscode/
+.claude/
+__pycache__/
+*.pyc
+dist/
+build/
+*.spec.bak
+*.egg-info/
+.pytest_cache/
+resources/ffmpeg/win/ffmpeg.exe
