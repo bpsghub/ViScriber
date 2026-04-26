@@ -103,28 +103,4 @@ Build standalone executable:
 pyinstaller videotranscriber.spec
 ```
 
-## Publishing Releases (Maintainers)
-
-This repository has GitHub Actions automation in [.github/workflows/build.yml](.github/workflows/build.yml).
-
-### Option 1: Tag Push (recommended)
-
-Create and push a version tag:
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-This triggers cross-platform builds and creates a GitHub Release with attached assets.
-
-### Option 2: Manual Run
-
-In GitHub:
-
-1. Open Actions.
-2. Open Build & Release.
-3. Click Run workflow.
-4. Enter an existing tag (for example `v1.0.0`).
-
-The workflow builds Windows installer, macOS DMG, and Linux AppImage, then publishes them on the Releases page.
+Maintainers: release publishing instructions are in [docs/RELEASING.md](docs/RELEASING.md).
