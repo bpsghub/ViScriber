@@ -21,7 +21,7 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            artifact: dist/VideoTranscriber-Setup.exe
+            artifact: installer/windows/dist/VideoTranscriber-Setup.exe
             platform: windows
           - os: macos-latest
             artifact: dist/VideoTranscriber.dmg
