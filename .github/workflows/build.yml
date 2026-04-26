@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to release (example: v1.0.0)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -26,7 +32,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref }}
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -65,12 +74,26 @@ jobs:
         with:
           name: installer-${{ matrix.platform }}
           path: ${{ matrix.artifact }}
+          if-no-files-found: error
 
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref }}
+
+      - name: Determine release tag
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -80,12 +103,14 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: ViScriber ${{ steps.meta.outputs.tag }}
           files: |
             artifacts/installer-windows/*
             artifacts/installer-macos/*
             artifacts/installer-linux/*
           body: |
-            ## Video Transcriber ${{ github.ref_name }}
+            ## Video Transcriber ${{ steps.meta.outputs.tag }}
 
             ### Downloads
             | Platform | File |
@@ -95,3 +120,4 @@ jobs:
             | Linux | `VideoTranscriber-x86_64.AppImage` |
 
             First launch will prompt you to download a Whisper model (~75–1500 MB depending on choice).
+          generate_release_notes: true
