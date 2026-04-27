@@ -31,13 +31,16 @@ class MainScreen(ctk.CTkFrame):
         self._build()
 
     def _build(self):
+        from src.config import load_config
+        _cfg = load_config()
+
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         # Header
         header = ctk.CTkFrame(self, fg_color="transparent")
         header.grid(row=0, column=0, sticky="ew", padx=16, pady=(12, 0))
-        ctk.CTkLabel(header, text="Video Transcriber", font=ctk.CTkFont(size=20, weight="bold")).pack(side="left")
+        ctk.CTkLabel(header, text="ViScriber: Local Video Transcriber", font=ctk.CTkFont(size=20, weight="bold")).pack(side="left")
         ctk.CTkButton(header, text="⚙ Settings", width=100, command=self._open_settings).pack(side="right")
 
         # Drop zone
@@ -74,13 +77,15 @@ class MainScreen(ctk.CTkFrame):
 
         model_values = [label for label, _ in MODELS]
         self._model_map = {label: code for label, code in MODELS}
-        self._model_var = ctk.StringVar(value=model_values[2])  # "small" default
+        _default_label = next((label for label, code in MODELS if code == _cfg.default_model), model_values[2])
+        self._model_var = ctk.StringVar(value=_default_label)
         ctk.CTkLabel(controls, text="Model").grid(row=0, column=1, sticky="w")
         ctk.CTkOptionMenu(controls, values=model_values, variable=self._model_var).grid(row=1, column=1, sticky="ew", padx=4)
 
         out_frame = ctk.CTkFrame(controls, fg_color="transparent")
         out_frame.grid(row=1, column=2, sticky="ew", padx=(8, 0))
-        self._out_dir_var = ctk.StringVar(value="Same as input")
+        _last_dir = _cfg.last_output_dir
+        self._out_dir_var = ctk.StringVar(value=_last_dir if _last_dir else "Same as input")
         ctk.CTkLabel(controls, text="Output folder").grid(row=0, column=2, sticky="w")
         ctk.CTkEntry(out_frame, textvariable=self._out_dir_var).pack(side="left", fill="x", expand=True)
         ctk.CTkButton(out_frame, text="…", width=32, command=self._pick_output_dir).pack(side="right")
@@ -133,6 +138,27 @@ class MainScreen(ctk.CTkFrame):
         from src.gui.settings_screen import SettingsModal
         SettingsModal(self.master)
 
+    def _confirm_overwrite(self, out_dir: str, cfg) -> bool:
+        formats = [f for f in cfg.output_formats if f != "ai"]
+        would_overwrite = []
+        for path in self._files:
+            stem = os.path.splitext(os.path.basename(path))[0]
+            file_out_dir = os.path.dirname(path) or "." if out_dir == "Same as input" else out_dir
+            for fmt in formats:
+                candidate = os.path.join(file_out_dir, f"{stem}.{fmt}")
+                if os.path.exists(candidate):
+                    would_overwrite.append(os.path.basename(candidate))
+        if not would_overwrite:
+            return True
+        from tkinter import messagebox
+        names = "\n".join(would_overwrite[:5])
+        if len(would_overwrite) > 5:
+            names += f"\n…and {len(would_overwrite) - 5} more"
+        return messagebox.askyesno(
+            "Files will be overwritten",
+            f"These files already exist and will be overwritten:\n\n{names}\n\nContinue?"
+        )
+
     def _start(self):
         if not self._files:
             from tkinter import messagebox
@@ -151,6 +177,15 @@ class MainScreen(ctk.CTkFrame):
         lang_code = self._lang_map.get(self._lang_var.get())
         model_code = self._model_map.get(self._model_var.get(), "small")
         out_dir = self._out_dir_var.get()
+
+        from src.config import load_config, save_config
+        cfg = load_config()
+        if not self._confirm_overwrite(out_dir, cfg):
+            return
+        cfg.default_model = model_code
+        cfg.last_output_dir = out_dir
+        save_config(cfg)
+
         options = {"language": lang_code, "model": model_code, "output_dir": out_dir}
         self.master.show_progress(list(self._files), options)
 

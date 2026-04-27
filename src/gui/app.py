@@ -13,7 +13,7 @@ class App(ctk.CTk):
             TkinterDnD._require(self)
         except Exception:
             pass
-        self.title("Video Transcriber")
+        self.title("ViScriber")
         self.geometry("720x540")
         self.minsize(640, 480)
         self.cfg = load_config()

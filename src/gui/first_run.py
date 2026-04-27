@@ -13,10 +13,12 @@ MODEL_INFO = [
 
 
 def _model_cached(model_size: str) -> bool:
-    """Return True if faster-whisper's HuggingFace cache has this model."""
     cache_root = Path.home() / ".cache" / "huggingface" / "hub"
-    pattern = f"models--Systran--faster-whisper-{model_size}"
-    return any(p.name == pattern for p in cache_root.iterdir()) if cache_root.exists() else False
+    try:
+        return any(p.name == f"models--Systran--faster-whisper-{model_size}"
+                   for p in cache_root.iterdir()) if cache_root.exists() else False
+    except OSError:
+        return False
 
 
 def maybe_show_first_run(app):

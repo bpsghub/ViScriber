@@ -1,5 +1,6 @@
 import json
 import os
+import stat
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
@@ -40,3 +41,7 @@ def save_config(cfg: Config) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(asdict(cfg), f, indent=2)
+    try:
+        os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
+    except OSError:
+        pass

@@ -25,7 +25,7 @@ def ffmpeg_install_guide() -> str:
             "Install FFmpeg for Windows, then restart this app:\n"
             "1. Download a build from https://www.gyan.dev/ffmpeg/builds/\n"
             "2. Extract it and add the ffmpeg 'bin' folder to PATH\n"
-            "3. Reopen Video Transcriber"
+            "3. Reopen ViScriber"
         )
     if sys.platform == "darwin":
         return (

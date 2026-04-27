@@ -1,12 +1,12 @@
 ; installer/windows/setup.iss
 [Setup]
-AppName=Video Transcriber
+AppName=ViScriber
 AppVersion=1.0.0
-AppPublisher=VideoTranscriber
-DefaultDirName={autopf}\VideoTranscriber
-DefaultGroupName=Video Transcriber
+AppPublisher=ViScriber
+DefaultDirName={autopf}\ViScriber
+DefaultGroupName=ViScriber
 OutputDir=dist
-OutputBaseFilename=VideoTranscriber-Setup
+OutputBaseFilename=ViScriber-Setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -17,11 +17,11 @@ SetupIconFile=..\..\resources\icon.ico
 Source: "..\..\dist\VideoTranscriber.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\Video Transcriber"; Filename: "{app}\VideoTranscriber.exe"
-Name: "{commondesktop}\Video Transcriber"; Filename: "{app}\VideoTranscriber.exe"; Tasks: desktopicon
+Name: "{group}\ViScriber"; Filename: "{app}\VideoTranscriber.exe"
+Name: "{commondesktop}\ViScriber"; Filename: "{app}\VideoTranscriber.exe"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Run]
-Filename: "{app}\VideoTranscriber.exe"; Description: "{cm:LaunchProgram,Video Transcriber}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\VideoTranscriber.exe"; Description: "{cm:LaunchProgram,ViScriber}"; Flags: nowait postinstall skipifsilent

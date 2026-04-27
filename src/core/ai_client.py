@@ -70,7 +70,11 @@ class OllamaClient:
             json={"model": self._model, "prompt": f"{prompt}\n\n---\n\n{transcript}", "stream": False},
             timeout=self._timeout,
         )
-        return response.json()["response"]
+        response.raise_for_status()
+        data = response.json()
+        if "response" not in data:
+            raise RuntimeError(data.get("error", "Unexpected Ollama response"))
+        return data["response"]
 
 
 def get_client(provider: str, api_key: str, base_url: str) -> Optional[AIClient]:

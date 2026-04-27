@@ -85,6 +85,22 @@ class SettingsModal(ctk.CTkToplevel):
         self._ollama_entry.configure(state=state_ollama)
 
     def _save(self):
+        if self._provider_var.get() == "ollama":
+            from urllib.parse import urlparse
+            from tkinter import messagebox
+            url = self._ollama_var.get()
+            try:
+                hostname = urlparse(url).hostname or ""
+            except Exception:
+                hostname = ""
+            if hostname not in ("localhost", "127.0.0.1", "::1", ""):
+                if not messagebox.askyesno(
+                    "External Ollama URL",
+                    f"The Ollama URL points to a non-local host ({hostname}).\n"
+                    "Your transcripts will be sent to that server. Continue?"
+                ):
+                    return
+
         formats = []
         if self._fmt_txt.get():
             formats.append("txt")

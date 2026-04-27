@@ -38,6 +38,7 @@ def transcribe_file(
     chunk_minutes: int = 5,
     formats: Optional[list] = None,
     progress_callback: Optional[Callable] = None,
+    cancel_event=None,
 ) -> TranscriptionResult:
     if formats is None:
         formats = ["txt"]
@@ -78,6 +79,8 @@ def transcribe_file(
 
             all_segments = []
             for i, chunk in enumerate(chunks):
+                if cancel_event and cancel_event.is_set():
+                    return TranscriptionResult(video_path=video_path, success=False, error="Cancelled")
                 pct = 15 + int((i / len(chunks)) * 72)
                 cb(f"Transcribing chunk {i + 1}/{len(chunks)}", pct)
                 segs, _ = model.transcribe(chunk, language=language, beam_size=5)

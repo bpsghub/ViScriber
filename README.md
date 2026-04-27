@@ -1,4 +1,4 @@
-# ViScriber
+# ViScriber: Local Video Transcriber
 
 Transcribe any video file locally using Whisper — no cloud upload required.
 
@@ -6,7 +6,7 @@ Transcribe any video file locally using Whisper — no cloud upload required.
 
 1. Open the GitHub Releases page: [https://github.com/bpsghub/ViScriber/releases](https://github.com/bpsghub/ViScriber/releases)
 2. Download the file for your OS:
-	- Windows: `VideoTranscriber-Setup.exe`
+	- Windows: `ViScriber-Setup.exe`
 	- macOS: `VideoTranscriber.dmg`
 	- Linux: `VideoTranscriber-x86_64.AppImage`
 3. Install or run it:
@@ -41,7 +41,7 @@ You need an internet connection for this first model download only.
 
 1. Open ViScriber.
 2. Drag and drop one or more video files, or use the file picker.
-3. Choose output type (`.txt`, `.srt`, or both).
+3. Optionally open ⚙ Settings to choose output formats (.txt, .srt, or AI summary).
 4. Click Start.
 5. Wait for processing to finish.
 6. Use the Open/Open Folder buttons to view results.

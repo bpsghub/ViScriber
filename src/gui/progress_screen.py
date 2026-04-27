@@ -48,14 +48,21 @@ class ProgressScreen(ctk.CTkFrame):
         self._log.see("end")
         self._log.configure(state="disabled")
 
+    def _safe_after(self, fn):
+        try:
+            if self.master.winfo_exists():
+                self.master.after(0, fn)
+        except Exception:
+            pass
+
     def _update_progress(self, file_index: int, step: str, pct: float):
         overall = (file_index / len(self._files)) if self._files else 0
-        self.master.after(0, lambda: self._overall_label.configure(
+        self._safe_after(lambda: self._overall_label.configure(
             text=f"File {file_index + 1} of {len(self._files)}"))
-        self.master.after(0, lambda: self._overall_bar.set(overall))
-        self.master.after(0, lambda: self._step_label.configure(text=step))
-        self.master.after(0, lambda: self._file_bar.set(pct / 100))
-        self.master.after(0, lambda: self._log_line(f"[{os.path.basename(self._files[file_index])}] {step}"))
+        self._safe_after(lambda: self._overall_bar.set(overall))
+        self._safe_after(lambda: self._step_label.configure(text=step))
+        self._safe_after(lambda: self._file_bar.set(pct / 100))
+        self._safe_after(lambda: self._log_line(f"[{os.path.basename(self._files[file_index])}] {step}"))
 
     def _cancel(self):
         self._cancel_event.set()
@@ -69,6 +76,11 @@ class ProgressScreen(ctk.CTkFrame):
         cfg = load_config()
         opts = self._opts
         out_base = opts.get("output_dir", "Same as input")
+
+        if "ai" in cfg.output_formats and cfg.ai_provider == "none":
+            self._safe_after(lambda: self._log_line(
+                "[WARN] AI summary skipped — no AI provider configured in Settings."
+            ))
 
         for i, video_path in enumerate(self._files):
             if self._cancel_event.is_set():
@@ -90,24 +102,28 @@ class ProgressScreen(ctk.CTkFrame):
                 chunk_minutes=5,
                 formats=formats,
                 progress_callback=lambda step, pct, idx=i: self._update_progress(idx, step, pct),
+                cancel_event=self._cancel_event,
             )
 
             if result.success:
                 self._output_files.extend(result.output_files)
 
                 if "ai" in cfg.output_formats and cfg.ai_provider != "none":
-                    self.master.after(0, lambda idx=i: self._step_label.configure(text="Generating AI summary…"))
+                    self._safe_after(lambda idx=i: self._step_label.configure(text="Generating AI summary…"))
                     ai_client = get_client(cfg.ai_provider, cfg.api_key, cfg.ollama_url)
                     if ai_client:
                         txt_files = [f for f in result.output_files if f.endswith(".txt")]
                         if txt_files:
                             transcript = open(txt_files[0], encoding="utf-8").read()
-                            summary = ai_client.summarize(transcript, cfg.custom_ai_prompt)
-                            md_path = txt_files[0].replace(".txt", "_summary.md")
-                            with open(md_path, "w", encoding="utf-8") as f:
-                                f.write(summary)
-                            self._output_files.append(md_path)
+                            try:
+                                summary = ai_client.summarize(transcript, cfg.custom_ai_prompt)
+                                md_path = txt_files[0].replace(".txt", "_summary.md")
+                                with open(md_path, "w", encoding="utf-8") as f:
+                                    f.write(summary)
+                                self._output_files.append(md_path)
+                            except Exception as exc:
+                                self._safe_after(lambda e=str(exc): self._log_line(f"[AI ERROR] {e}"))
             else:
-                self.master.after(0, lambda e=result.error: self._log_line(f"[ERROR] {e}"))
+                self._safe_after(lambda e=result.error: self._log_line(f"[ERROR] {e}"))
 
-        self.master.after(0, lambda: self.master.show_results(self._output_files))
+        self._safe_after(lambda: self.master.show_results(self._output_files))
