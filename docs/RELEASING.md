@@ -8,9 +8,9 @@ Release automation is defined in [../.github/workflows/build.yml](../.github/wor
 
 When a tag like `v1.0.0` is pushed, GitHub Actions builds:
 
-- Windows installer: `VideoTranscriber-Setup.exe`
-- macOS installer: `VideoTranscriber.dmg`
-- Linux package: `VideoTranscriber-x86_64.AppImage`
+- Windows installer: `ViScriber-Setup.exe`
+- macOS installer: `ViScriber.dmg`
+- Linux package: `ViScriber-x86_64.AppImage`
 
 Then it creates or updates the GitHub Release for that tag and uploads the artifacts.
 

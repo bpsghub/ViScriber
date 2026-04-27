@@ -7,12 +7,12 @@ Transcribe any video file locally using Whisper — no cloud upload required.
 1. Open the GitHub Releases page: [https://github.com/bpsghub/ViScriber/releases](https://github.com/bpsghub/ViScriber/releases)
 2. Download the file for your OS:
 	- Windows: `ViScriber-Setup.exe`
-	- macOS: `VideoTranscriber.dmg`
-	- Linux: `VideoTranscriber-x86_64.AppImage`
+	- macOS: `ViScriber.dmg`
+	- Linux: `ViScriber-x86_64.AppImage`
 3. Install or run it:
 	- Windows: run the setup file and complete the installer
 	- macOS: open the DMG and drag the app to Applications
-	- Linux: make AppImage executable (`chmod +x VideoTranscriber-x86_64.AppImage`) then run it
+	- Linux: make AppImage executable (`chmod +x ViScriber-x86_64.AppImage`) then run it
 
 No Python installation needed. FFmpeg is included in official release builds when available. If FFmpeg is missing, the app shows setup instructions and asks you to install it.
 
@@ -76,6 +76,44 @@ If ViScriber shows "FFmpeg Not Found":
 - Optional AI summary via Claude, OpenAI, or local Ollama
 - First launch downloads your chosen Whisper model (~75 MB–1.5 GB depending on quality)
 - Dark mode UI, cross-platform (Windows / macOS / Linux)
+
+---
+
+## AI Summary Setup
+
+ViScriber can generate a Markdown summary of each transcript using an AI provider. This is optional — transcription works without it.
+
+### Enable AI summaries
+
+1. Open **⚙ Settings**.
+2. Set **AI Provider** to `claude`, `openai`, or `ollama`.
+3. Check **AI summary (.md)** under Output Formats.
+4. Click **Save**.
+
+An extra `.md` file will be written next to each transcript after processing.
+
+### Claude (Anthropic)
+
+- Requires an [Anthropic account](https://console.anthropic.com/).
+- Create an API key in the Anthropic Console and paste it into the **API Key** field in Settings.
+- Default model: `claude-sonnet-4-6`. API calls are billed per token — a typical transcript costs a few cents.
+
+### OpenAI
+
+- Requires an [OpenAI account](https://platform.openai.com/).
+- Create an API key and paste it into the **API Key** field in Settings.
+- Default model: `gpt-4o-mini`.
+
+### Ollama (local, free)
+
+- Requires [Ollama](https://ollama.com/) running on your machine.
+- No API key needed. Set the **Ollama URL** to your Ollama endpoint (default: `http://localhost:11434`).
+- Pull a model first: `ollama pull llama3`
+- Transcripts are processed locally and never sent to a third-party server (unless you point the Ollama URL at a remote host, in which case ViScriber will warn you).
+
+### Customising the prompt
+
+The **AI Prompt** field in Settings controls what the AI does with the transcript. The default asks for a summary; you can change it to extract action items, translate, or anything else.
 
 ---
 

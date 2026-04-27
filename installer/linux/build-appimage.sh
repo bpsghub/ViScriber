@@ -27,5 +27,5 @@ exec "$APPDIR/usr/bin/VideoTranscriber" "$@"
 EOF
 chmod +x "$APPDIR/AppRun"
 
-ARCH=x86_64 appimagetool "$APPDIR" dist/VideoTranscriber-x86_64.AppImage
-echo "AppImage created: dist/VideoTranscriber-x86_64.AppImage"
+ARCH=x86_64 appimagetool "$APPDIR" dist/ViScriber-x86_64.AppImage
+echo "AppImage created: dist/ViScriber-x86_64.AppImage"

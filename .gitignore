@@ -9,3 +9,4 @@ build/
 *.egg-info/
 .pytest_cache/
 resources/ffmpeg/win/ffmpeg.exe
+QA-report.md

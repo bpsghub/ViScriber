@@ -3,7 +3,7 @@
 set -e
 
 APP="dist/VideoTranscriber.app"
-DMG="dist/VideoTranscriber.dmg"
+DMG="dist/ViScriber.dmg"
 
 create-dmg \
   --volname "Video Transcriber" \

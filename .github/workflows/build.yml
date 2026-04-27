@@ -24,10 +24,10 @@ jobs:
             artifact: installer/windows/dist/ViScriber-Setup.exe
             platform: windows
           - os: macos-latest
-            artifact: dist/VideoTranscriber.dmg
+            artifact: dist/ViScriber.dmg
             platform: macos
           - os: ubuntu-latest
-            artifact: dist/VideoTranscriber-x86_64.AppImage
+            artifact: dist/ViScriber-x86_64.AppImage
             platform: linux
 
     runs-on: ${{ matrix.os }}
@@ -119,8 +119,8 @@ jobs:
             | Platform | File |
             |----------|------|
             | Windows | `ViScriber-Setup.exe` |
-            | macOS | `VideoTranscriber.dmg` |
-            | Linux | `VideoTranscriber-x86_64.AppImage` |
+            | macOS | `ViScriber.dmg` |
+            | Linux | `ViScriber-x86_64.AppImage` |
 
             First launch will prompt you to download a Whisper model (~75–1500 MB depending on choice).
           generate_release_notes: true
