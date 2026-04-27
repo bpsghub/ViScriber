@@ -77,6 +77,17 @@ If ViScriber shows "FFmpeg Not Found":
 - First launch downloads your chosen Whisper model (~75 MB–1.5 GB depending on quality)
 - Dark mode UI, cross-platform (Windows / macOS / Linux)
 
+## Screenshots
+
+**Main interface** — drag files or select them to transcribe:
+![ViScriber main screen](screenshot/home.PNG)
+
+**In progress** — live status and logs during transcription:
+![Transcription in progress](screenshot/transcribing.PNG)
+
+**Results** — view and open generated transcript and subtitle files:
+![Results screen](screenshot/result.PNG)
+
 ---
 
 ## AI Summary Setup
