@@ -15,6 +15,7 @@ Transcribe any video file locally using Whisper — no cloud upload required.
 	- Linux: make AppImage executable (`chmod +x ViScriber-x86_64.AppImage`) then run it
 
 No Python installation needed. FFmpeg is included in official release builds when available. If FFmpeg is missing, the app shows setup instructions and asks you to install it.
+On Windows, first launch also offers an in-app FFmpeg installer so you do not need to set PATH manually.
 
 If the Releases page has no downloadable files yet, use the steps in [Developer Setup](#developer-setup) to run from source.
 
@@ -34,6 +35,7 @@ On first launch, ViScriber asks you to download a Whisper model.
   - large: ~1.5 GB (slow on CPU, best accuracy)
 
 You need an internet connection for this first model download only.
+If FFmpeg is missing on Windows, the first-launch wizard can install it before you start transcribing.
 
 ---
 
@@ -56,7 +58,7 @@ Output files are written next to your input video by default.
 
 If ViScriber shows "FFmpeg Not Found":
 
-- Windows: install FFmpeg from https://www.gyan.dev/ffmpeg/builds/, then add FFmpeg `bin` to your PATH and restart ViScriber.
+- Windows: open the first-launch wizard and use the FFmpeg installer, or install FFmpeg from https://www.gyan.dev/ffmpeg/builds/ and add FFmpeg `bin` to your PATH.
 - macOS: run `brew install ffmpeg`, then restart ViScriber.
 - Linux: install FFmpeg from your distro package manager and ensure `ffmpeg` is in PATH.
 

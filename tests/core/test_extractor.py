@@ -1,11 +1,14 @@
 import os
 import sys
 import subprocess
+import zipfile
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 import pytest
+import src.core.extractor as extractor
 from src.core.extractor import (
     _ffmpeg_binary,
+    _extract_windows_ffmpeg,
     extract_audio,
     split_audio,
     cleanup_chunks,
@@ -51,6 +54,32 @@ def test_ffmpeg_binary_platform_linux(mock_exists, monkeypatch):
     monkeypatch.setattr(sys, "platform", "linux")
     path = _ffmpeg_binary()
     assert path == "ffmpeg"  # falls back to system PATH when bundled doesn't exist
+
+
+def test_ffmpeg_binary_prefers_installed_copy(monkeypatch, tmp_path):
+    monkeypatch.setattr(sys, "platform", "win32")
+    monkeypatch.setattr(extractor, "_bundled_ffmpeg_binary", lambda: tmp_path / "missing" / "ffmpeg.exe")
+    monkeypatch.setattr(extractor, "_FFMPEG_USER_DIR", tmp_path / ".videoscribe" / "ffmpeg")
+
+    installed = tmp_path / ".videoscribe" / "ffmpeg" / "win" / "ffmpeg.exe"
+    installed.parent.mkdir(parents=True)
+    installed.write_text("binary")
+
+    assert _ffmpeg_binary() == str(installed)
+
+
+def test_extract_windows_ffmpeg_writes_executables(tmp_path):
+    archive_path = tmp_path / "ffmpeg.zip"
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr("ffmpeg-release-essentials/bin/ffmpeg.exe", b"ffmpeg-binary")
+        archive.writestr("ffmpeg-release-essentials/bin/ffprobe.exe", b"ffprobe-binary")
+
+    install_dir = tmp_path / "install"
+    ffmpeg_path = _extract_windows_ffmpeg(archive_path, install_dir)
+
+    assert ffmpeg_path == install_dir / "ffmpeg.exe"
+    assert ffmpeg_path.read_bytes() == b"ffmpeg-binary"
+    assert (install_dir / "ffprobe.exe").read_bytes() == b"ffprobe-binary"
 
 
 @patch("src.core.extractor.subprocess.run")
